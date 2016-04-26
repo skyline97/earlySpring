@@ -1,7 +1,9 @@
-package com.skyline.tinySpring.factory;
+package com.skyline.earlySpring.factory;
+
+import com.skyline.earlySpring.core.BeanDefinitionRegister;
 
 
-public interface BeanFactory {
+public interface BeanFactory extends BeanDefinitionRegister {
 
 	Object getBean(String name) throws Exception;
 	

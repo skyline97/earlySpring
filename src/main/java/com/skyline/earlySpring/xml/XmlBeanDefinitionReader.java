@@ -1,4 +1,4 @@
-package com.skyline.tinySpring.xml;
+package com.skyline.earlySpring.xml;
 
 import java.io.InputStream;
 
@@ -10,11 +10,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.skyline.tinySpring.core.AbstractBeanDefinitionReader;
-import com.skyline.tinySpring.core.BeanDefinition;
-import com.skyline.tinySpring.core.BeanReference;
-import com.skyline.tinySpring.core.PropertyValue;
-import com.skyline.tinySpring.io.ResourceLoader;
+import com.skyline.earlySpring.core.AbstractBeanDefinitionReader;
+import com.skyline.earlySpring.core.BeanDefinition;
+import com.skyline.earlySpring.core.BeanDefinitionRegister;
+import com.skyline.earlySpring.core.BeanReference;
+import com.skyline.earlySpring.core.PropertyValue;
+import com.skyline.earlySpring.io.Resource;
 
 /**
  * 对xml进行解析的类
@@ -23,13 +24,20 @@ import com.skyline.tinySpring.io.ResourceLoader;
  */
 public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 
-	protected XmlBeanDefinitionReader(ResourceLoader rl) {
-		super(rl);
+	public XmlBeanDefinitionReader(BeanDefinitionRegister register) {
+		super(register);
 	}
-
+	
 	@Override
 	public void loadBeanDefinitions(String location) throws Exception {
 		InputStream in = getResourceLoader().getResource(location).getInputStream();
+		doLoadBeanDefinitions(in);
+	}
+
+	
+	@Override
+	public void loadBeanDefinitions(Resource resource) throws Exception {
+		InputStream in = resource.getInputStream();
 		doLoadBeanDefinitions(in);
 	}
 
@@ -46,7 +54,6 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 	
 	private void registerBeanDefinitions(Document doc) {
 		Element root = doc.getDocumentElement();
-		
 		parseBeanDefinitions(root);
 	}
 	
@@ -68,19 +75,24 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 		//beanDefinition的singleton属性默认是true
 		String scope = ele.getAttribute("scope");
 		BeanDefinition beanDefinition = new BeanDefinition();
-		if(scope != null && scope.equals("singleton"))
-			beanDefinition.setSingleton(true);
-		else if(scope != null && scope.equals("prototype"))
-			beanDefinition.setSingleton(false);
-		else
-			throw new RuntimeException("illegal scope");
+		if(scope != null && !scope.equals("")) {
+			if(scope.equals("singleton"))
+				beanDefinition.setSingleton(true);
+			else if(scope.equals("prototype")) {
+				beanDefinition.setSingleton(false);
+				beanDefinition.setPrototype(true);
+			}
+			else
+				throw new RuntimeException("illegal scope");
+		}
 		
 		processProperty(ele, beanDefinition);
+		
+		//设置BeanClassName同时会设置BeanClass,此时不会setBean
 		beanDefinition.setBeanClassName(className);
 	
-		
-		//
-		getRegistry().put(name, beanDefinition);
+		//向容器中注册
+		getRegistry().registerBeanDefinition(name, beanDefinition);
 	}
 	
 	private void processProperty(Element ele,BeanDefinition beanDefinition) {

@@ -1,4 +1,4 @@
-package com.skyline.tinySpring.io;
+package com.skyline.earlySpring.io;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,7 +14,7 @@ public class ClassPathResource implements Resource {
 	
 	@Override
 	public InputStream getInputStream() throws IOException {
-		InputStream in = getClass().getResourceAsStream(classpath);
+		InputStream in = getClass().getResourceAsStream("/" + classpath);
 		if (in == null) {
 			throw new FileNotFoundException("it does not exist");
 		}

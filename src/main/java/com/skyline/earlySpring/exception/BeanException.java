@@ -1,4 +1,4 @@
-package com.skyline.tinySpring.exception;
+package com.skyline.earlySpring.exception;
 
 public class BeanException extends RuntimeException {
 

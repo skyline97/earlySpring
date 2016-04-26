@@ -1,0 +1,9 @@
+<beans>
+	<bean id="user" class="com.skyline.earlySpring.User">
+		<property name="username" value="pfw"/>
+	</bean>
+	
+	<bean id="user2" class="com.skyline.earlySpring.User">
+		<property name="username" value="cwj"/>
+	</bean>
+</beans>

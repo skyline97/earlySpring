@@ -1,4 +1,4 @@
-package com.skyline.tinySpring.core;
+package com.skyline.earlySpring.core;
 
 public class PropertyValue {
 

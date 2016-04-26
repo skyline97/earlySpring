@@ -1,19 +1,23 @@
-package com.skyline.tinySpring.factory;
+package com.skyline.earlySpring.factory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import com.skyline.tinySpring.core.BeanDefinition;
-import com.skyline.tinySpring.core.BeanReference;
-import com.skyline.tinySpring.core.PropertyValue;
+import com.skyline.earlySpring.core.BeanDefinition;
+import com.skyline.earlySpring.core.BeanReference;
+import com.skyline.earlySpring.core.PropertyValue;
 
-public class AutowireBeanFactory extends AbstractBeanFactory{
+public class AutowiredBeanFactory extends AbstractBeanFactory {
 
+	/**
+	 * 实现依赖注入的地方
+	 */
 	@Override
 	protected void applyPropertyValues(Object bean,
 			BeanDefinition beanDefinition) throws Exception{
 		for(PropertyValue propertyValue : beanDefinition.getPropertyValues().getPropertyValueList()) {
 			Object value = propertyValue.getValue();
+			//对应属性是ref的情况
 			if(value instanceof BeanReference) {
 				BeanReference beanReference = (BeanReference) value;
 				value = getBean(beanReference.getName());
@@ -25,6 +29,7 @@ public class AutowireBeanFactory extends AbstractBeanFactory{
 				declaredMethod = bean.getClass().getDeclaredMethod(
 							"set" + propertyValue.getName().substring(0,1).toUpperCase()
 							+ propertyValue.getName().substring(1), value.getClass());
+				System.out.println(declaredMethod);
 				declaredMethod.setAccessible(true);
 				declaredMethod.invoke(bean, value);
 			} catch (NoSuchMethodException e) {

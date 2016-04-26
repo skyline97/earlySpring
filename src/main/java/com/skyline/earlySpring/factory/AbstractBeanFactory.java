@@ -1,15 +1,15 @@
-package com.skyline.tinySpring.factory;
+package com.skyline.earlySpring.factory;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.skyline.tinySpring.core.BeanDefinition;
-import com.skyline.tinySpring.core.BeanPostProcessor;
+import com.skyline.earlySpring.core.BeanDefinition;
+import com.skyline.earlySpring.core.BeanPostProcessor;
 
-public abstract class AbstractBeanFactory implements BeanFactory{
+public abstract class AbstractBeanFactory implements BeanFactory {
 
 	/**
 	 * 具体的IOC容器
@@ -19,6 +19,9 @@ public abstract class AbstractBeanFactory implements BeanFactory{
 	
 	private final List<String> beanDefinitionNames = new ArrayList<String>();
 	
+	/**
+	 * PostProcessor列表
+	 */
 	private List<BeanPostProcessor> beanPostProcessors = new ArrayList<BeanPostProcessor>();
 	
 	@Override
@@ -35,39 +38,51 @@ public abstract class AbstractBeanFactory implements BeanFactory{
 		if(bean == null) {
 			bean = doCreateBean(beanDefinition);
 			bean = initializeBean(bean,name);
+			//第二次setBean
 			beanDefinition.setBean(bean);
 		}
 		return bean;
 	}
 	
+	/**
+	 * 通过遍历beanDefinitionNames来找到相同Class的bean
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getBean(Class<T> clazz) throws Exception {
 		for(String beanDefinitionName : beanDefinitionNames) {
 			BeanDefinition beanDefinition = beanDefinitionMap.get(beanDefinitionName);
-			if(clazz.isAssignableFrom(beanDefinition.getBeanClass()))
-				return (T) beanDefinition.getBean();
+			if(clazz.isAssignableFrom(beanDefinition.getBeanClass())) {
+				return (T) getBean(beanDefinitionName);
+			}
 		}
 		
+		//如果未找到,则抛出异常
+		throw new RuntimeException("find no bean");
+	}
+	
+	/**
+	 * 首先通过getBean(name),再判断class类型,若正确,返回;若判断失败,抛出异常
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getBean(String name, Class<T> clazz) throws Exception {
+		Object bean = getBean(name);
+		if(bean.getClass().isAssignableFrom(clazz))
+			return (T) bean;
+		
+		//如果未找到,则抛出异常
 		throw new RuntimeException("find no bean");
 	}
 	
 	@Override
-	public <T> T getBean(String name, Class<T> clazz) throws Exception {
-		//TODO 
-		return null;
-	}
-	
-	@Override
 	public boolean isPrototype(String name) throws Exception {
-		//TODO
-		return false;
+		return beanDefinitionMap.get(name).isPrototype();
 	}
 	
 	@Override
 	public boolean isSingleton(String name) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		return beanDefinitionMap.get(name).isSingleton();
 	}
 	
 	/**
@@ -78,20 +93,26 @@ public abstract class AbstractBeanFactory implements BeanFactory{
 	 */
 	protected Object doCreateBean(BeanDefinition beanDefinition) throws Exception{
 		Object bean = createBeanInstance(beanDefinition);
+		//第一次setBean
 		beanDefinition.setBean(bean);
+		//实现属性的依赖注入的地方
 		applyPropertyValues(bean,beanDefinition);
 		return bean;
 	}
 	
 	/**
-	 * 预实例化单例的Bean
+	 * 预实例化非LazyInit选项的单例Bean
+	 * lazy-init 设置只对scop属性为singleton的bean起作用
 	 * @throws Exception
 	 */
 	public void preInitiateSingletons() throws Exception {
-		for(Iterator<String> it = this.beanDefinitionNames.iterator(); it.hasNext();) {
-			String beanName = it.next();
-			getBean(beanName);
+		for(Entry<String, BeanDefinition> entry : beanDefinitionMap.entrySet()) {
+			String beanName = entry.getKey();
+			BeanDefinition beanDefinition = entry.getValue();
+			if(beanDefinition.isSingleton() && !beanDefinition.isLazyInit())
+				getBean(beanName);
 		}
+		
 	}
 	
 	/**
@@ -137,6 +158,7 @@ public abstract class AbstractBeanFactory implements BeanFactory{
 	 * @param name
 	 * @param beanDefinition
 	 */
+	@Override
 	public void registerBeanDefinition(String name,BeanDefinition beanDefinition) {
 		beanDefinitionMap.put(name, beanDefinition);
 		beanDefinitionNames.add(name);
