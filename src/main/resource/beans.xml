@@ -12,7 +12,7 @@
 		<property name="phone" value="18618480723"/>	
 	</bean>
 	
-	<bean id="user3" class="com.skyline.earlySpring.User">
+	<bean id="user3" class="com.skyline.earlySpring.User" lazyInit="false" scope="prototype">
 		<property name="username" value="pfw"/>
 		<property name="address" ref="address"/>
 	</bean>

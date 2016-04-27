@@ -42,7 +42,8 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			bean = doCreateBean(beanDefinition);
 			bean = initializeBean(bean,name);
 			//第二次setBean
-			beanDefinition.setBean(bean);
+			if(beanDefinition.isSingleton()) 
+				beanDefinition.setBean(bean);
 		}
 		return bean;
 	}
@@ -95,12 +96,20 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	 * @throws Exception
 	 */
 	protected Object doCreateBean(BeanDefinition beanDefinition) throws Exception{
+		if(beanDefinition.isSingleton()) {
+			Object bean = createBeanInstance(beanDefinition);
+			//第一次setBean
+			beanDefinition.setBean(bean);
+			//实现属性的依赖注入的地方
+			applyPropertyValues(bean,beanDefinition);
+			return bean;
+		}
+		
+		//prototype
 		Object bean = createBeanInstance(beanDefinition);
-		//第一次setBean
-		beanDefinition.setBean(bean);
-		//实现属性的依赖注入的地方
-		applyPropertyValues(bean,beanDefinition);
+		applyPropertyValues(bean, beanDefinition);
 		return bean;
+		
 	}
 	
 	/**
@@ -112,7 +121,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		for(Entry<String, BeanDefinition> entry : beanDefinitionMap.entrySet()) {
 			String beanName = entry.getKey();
 			BeanDefinition beanDefinition = entry.getValue();
-			if(beanDefinition.isSingleton() && !beanDefinition.isLazyInit())
+			if(beanDefinition != null && beanDefinition.isSingleton() && !beanDefinition.isLazyInit())
 				getBean(beanName);
 		}
 		

@@ -3,6 +3,7 @@ package com.skyline.earlySpring;
 import org.junit.Test;
 
 import com.skyline.earlySpring.core.BeanDefinitionReader;
+import com.skyline.earlySpring.core.BeanPostProcessor;
 import com.skyline.earlySpring.factory.AutowiredBeanFactory;
 import com.skyline.earlySpring.factory.BeanFactory;
 import com.skyline.earlySpring.io.ClassPathResource;
@@ -13,7 +14,7 @@ public class TestEarlySpring {
 	
 
 	@Test
-	public void test01() throws Exception {
+	public void testIOC() throws Exception {
 		BeanFactory beanFactory = new AutowiredBeanFactory();
 		BeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
 		Resource resource = new ClassPathResource("beans.xml");
@@ -24,7 +25,7 @@ public class TestEarlySpring {
 	}
 	
 	@Test
-	public void test02() throws Exception {
+	public void testIOC02() throws Exception {
 		BeanFactory beanFactory = new AutowiredBeanFactory();
 		BeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
 		reader.loadBeanDefinitions("classpath:beans.xml");
@@ -36,14 +37,45 @@ public class TestEarlySpring {
 	}
 	
 	@Test
-	public void test03() throws Exception {
+	public void testRefAndScope() throws Exception {
 		BeanFactory beanFactory = new AutowiredBeanFactory();
 		BeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
 		reader.loadBeanDefinitions("classpath:beans.xml");
 		
 		//有一个属性是ref类型
 		User u = beanFactory.getBean("user3",User.class);
+		User u2 = (User) beanFactory.getBean("user3");
 		System.out.println(u);
+		//user3是多例,所以输出为false
+		System.out.println(u == u2);
+	}
+	
+	@Test
+	public void testBeanPostProcessor() throws Exception {
+		AutowiredBeanFactory beanFactory = new AutowiredBeanFactory();
+		BeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
+		reader.loadBeanDefinitions("classpath:beans.xml");
+		
+		beanFactory.addBeanPostProcessor(new BeanPostProcessor() {
+			
+			@Override
+			public Object postProcessBeforeInitialization(Object object, String beanName)
+					throws Exception {
+				System.out.println("before ----" + beanName);
+				return object;
+			}
+			
+			@Override
+			public Object postProcessAfterInitialization(Object object, String beanName)
+					throws Exception {
+				System.out.println("after -----" + beanName);
+				return object;
+			}
+		});
+		
+		Address a = beanFactory.getBean("address",Address.class);
+		System.out.println(a);
+		
 	}
 
 }

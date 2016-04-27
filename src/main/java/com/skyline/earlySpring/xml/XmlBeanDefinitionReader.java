@@ -15,6 +15,7 @@ import com.skyline.earlySpring.core.BeanDefinition;
 import com.skyline.earlySpring.core.BeanDefinitionRegister;
 import com.skyline.earlySpring.core.BeanReference;
 import com.skyline.earlySpring.core.PropertyValue;
+import com.skyline.earlySpring.factory.BeanFactory;
 import com.skyline.earlySpring.io.Resource;
 
 /**
@@ -53,7 +54,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 	}
 	
 	
-	private void registerBeanDefinitions(Document doc) {
+	private void registerBeanDefinitions(Document doc) throws Exception {
 		Element root = doc.getDocumentElement();
 		parseBeanDefinitions(root);
 	}
@@ -61,8 +62,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 	/**
 	 * 解析出xml中的<bean>元素
 	 * @param root
+	 * @throws Exception 
 	 */
-	private void parseBeanDefinitions(Element root) {
+	private void parseBeanDefinitions(Element root) throws Exception {
 		NodeList nodeList = root.getChildNodes();
 		for(int i = 0; i < nodeList.getLength(); i++) {
 			Node node = nodeList.item(i);
@@ -77,8 +79,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 	/**
 	 * 解析<bean>元素中的信息,通过一个beanDefinition进行封装
 	 * @param ele
+	 * @throws Exception 
 	 */
-	private void processBeanDefinition(Element ele) {
+	private void processBeanDefinition(Element ele) throws Exception {
 		String name = ele.getAttribute("id");
 		String className = ele.getAttribute("class");
 		
@@ -96,18 +99,22 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 				throw new RuntimeException("illegal scope");
 		}
 		
-		//解析lazyInit属性
-		String lazyInit = ele.getAttribute("lazyInit");
-		if(lazyInit != null && lazyInit.equals("true"))
-			beanDefinition.setLazyInit(true);
-		
 		processProperty(ele, beanDefinition);
 		
 		//设置BeanClassName同时会设置BeanClass,此时不会setBean
 		beanDefinition.setBeanClassName(className);
-	
+		
 		//向容器中注册
 		getRegistry().registerBeanDefinition(name, beanDefinition);
+
+		
+		//lazyInit部分
+		String lazyInit = ele.getAttribute("lazyInit");
+		if(lazyInit != null && beanDefinition.isSingleton() &&lazyInit.equals("false")) {
+			beanDefinition.setLazyInit(false);
+			Object bean = ((BeanFactory)getRegistry()).getBean(name);
+			beanDefinition.setBean(bean);
+		}
 	}
 	
 	/**

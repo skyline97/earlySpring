@@ -23,9 +23,9 @@ public class BeanDefinition {
 	private boolean isPrototype = false;
 	
 	/**
-	 * 懒加载默认为false
+	 * 懒加载默认为true
 	 */
-	private boolean lazyInit = false;
+	private boolean lazyInit = true;
 	
 	public BeanDefinition() {
 	}
