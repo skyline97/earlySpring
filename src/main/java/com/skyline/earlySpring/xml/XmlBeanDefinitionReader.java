@@ -52,22 +52,32 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 		in.close();
 	}
 	
+	
 	private void registerBeanDefinitions(Document doc) {
 		Element root = doc.getDocumentElement();
 		parseBeanDefinitions(root);
 	}
 	
+	/**
+	 * 解析出xml中的<bean>元素
+	 * @param root
+	 */
 	private void parseBeanDefinitions(Element root) {
 		NodeList nodeList = root.getChildNodes();
 		for(int i = 0; i < nodeList.getLength(); i++) {
 			Node node = nodeList.item(i);
 			if(node instanceof Element) {
+				//此时的node就是<bean>
 				Element ele = (Element) node;
 				processBeanDefinition(ele);
 			}
 		}
 	}
 	
+	/**
+	 * 解析<bean>元素中的信息,通过一个beanDefinition进行封装
+	 * @param ele
+	 */
 	private void processBeanDefinition(Element ele) {
 		String name = ele.getAttribute("id");
 		String className = ele.getAttribute("class");
@@ -86,6 +96,11 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 				throw new RuntimeException("illegal scope");
 		}
 		
+		//解析lazyInit属性
+		String lazyInit = ele.getAttribute("lazyInit");
+		if(lazyInit != null && lazyInit.equals("true"))
+			beanDefinition.setLazyInit(true);
+		
 		processProperty(ele, beanDefinition);
 		
 		//设置BeanClassName同时会设置BeanClass,此时不会setBean
@@ -95,6 +110,11 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 		getRegistry().registerBeanDefinition(name, beanDefinition);
 	}
 	
+	/**
+	 * 解析<bean>中的<property>,然后设置到beanDefinition中
+	 * @param ele
+	 * @param beanDefinition
+	 */
 	private void processProperty(Element ele,BeanDefinition beanDefinition) {
 		NodeList propertyNode = ele.getElementsByTagName("property");
 		for(int i = 0;i < propertyNode.getLength(); i++) {
@@ -107,6 +127,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 					beanDefinition.getPropertyValues().addPropertyValue(new PropertyValue(name, value));
 				} 
 				else {
+					//属性为ref的情况
 					String ref = propertyEle.getAttribute("ref");
 					if(ref == null || ref.length() == 0) {
 						throw new IllegalArgumentException("ref can not be null");

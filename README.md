@@ -3,9 +3,14 @@
 #### 模仿Spring所写的一个小型IOC容器 ####
 
 功能:
-1. 依赖注入(基本类型的注入功能未实现- -)
-2. 懒加载
-3. XML配置 
+
+1. setter依赖注入
+2. 不同路径的资源获取
+3. scope,lazyInit
+4. BeanPostProcessor
+
+-----> 预计引入BeanUtils实现基本类型的注入
+
 
 源码中写了详细的注释.
 

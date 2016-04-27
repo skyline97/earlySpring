@@ -6,4 +6,14 @@
 	<bean id="user2" class="com.skyline.earlySpring.User">
 		<property name="username" value="cwj"/>
 	</bean>
+	
+	<bean id="address" class="com.skyline.earlySpring.Address">
+		<property name="name" value="bjfu"/>
+		<property name="phone" value="18618480723"/>	
+	</bean>
+	
+	<bean id="user3" class="com.skyline.earlySpring.User">
+		<property name="username" value="pfw"/>
+		<property name="address" ref="address"/>
+	</bean>
 </beans>

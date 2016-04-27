@@ -5,6 +5,16 @@ public class User {
 	private int id;
 	
 	private String username;
+	
+	private Address address;
+	
+	public Address getAddress() {
+		return address;
+	}
+	
+	public void setAddress(Address address) {
+		this.address = address;
+	}
 
 	public int getId() {
 		return id;
@@ -24,8 +34,10 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", username=" + username + "]";
+		return "User [id=" + id + ", username=" + username + ", address="
+				+ address + "]";
 	}
+	
 	
 	
 }

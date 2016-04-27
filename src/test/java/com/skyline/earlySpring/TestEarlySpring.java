@@ -10,6 +10,7 @@ import com.skyline.earlySpring.io.Resource;
 import com.skyline.earlySpring.xml.XmlBeanDefinitionReader;
 
 public class TestEarlySpring {
+	
 
 	@Test
 	public void test01() throws Exception {
@@ -32,6 +33,17 @@ public class TestEarlySpring {
 		User u2 = beanFactory.getBean("user2",User.class);
 		System.out.println(u);
 		System.out.println(u2);
+	}
+	
+	@Test
+	public void test03() throws Exception {
+		BeanFactory beanFactory = new AutowiredBeanFactory();
+		BeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
+		reader.loadBeanDefinitions("classpath:beans.xml");
+		
+		//有一个属性是ref类型
+		User u = beanFactory.getBean("user3",User.class);
+		System.out.println(u);
 	}
 
 }

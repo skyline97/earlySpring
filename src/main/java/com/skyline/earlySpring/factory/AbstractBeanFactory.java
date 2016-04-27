@@ -29,6 +29,9 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		return beanDefinitionMap.containsKey(name);
 	}
 	
+	/**
+	 * 根据bean的id来获取bean
+	 */
 	@Override
 	public Object getBean(String name) throws Exception {
 		BeanDefinition beanDefinition = beanDefinitionMap.get(name);
