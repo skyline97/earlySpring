@@ -8,8 +8,7 @@
 2. 不同路径的资源获取
 3. scope,lazyInit
 4. BeanPostProcessor
-
------> 预计引入BeanUtils实现基本类型的注入
+5. 支持applicationContext
 
 
 源码中写了详细的注释.

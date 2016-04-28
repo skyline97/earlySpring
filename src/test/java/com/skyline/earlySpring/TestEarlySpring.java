@@ -2,6 +2,8 @@ package com.skyline.earlySpring;
 
 import org.junit.Test;
 
+import com.skyline.earlySpring.context.ApplicationContext;
+import com.skyline.earlySpring.context.ClasspathXmlApplicationContext;
 import com.skyline.earlySpring.core.BeanDefinitionReader;
 import com.skyline.earlySpring.core.BeanPostProcessor;
 import com.skyline.earlySpring.factory.AutowiredBeanFactory;
@@ -76,6 +78,30 @@ public class TestEarlySpring {
 		Address a = beanFactory.getBean("address",Address.class);
 		System.out.println(a);
 		
+	}
+	
+	@Test
+	public void testApplicationContext() throws Exception {
+		ApplicationContext context = new ClasspathXmlApplicationContext("beans.xml");
+		Address a = context.getBean("address",Address.class);
+		System.out.println(a);
+	}
+	
+	@Test
+	public void testApplicationContext2() throws Exception {
+		ApplicationContext context = new ClasspathXmlApplicationContext("beans.xml");
+		User u = context.getBean("user3",User.class);
+		User u2 = context.getBean("user3",User.class);
+		System.out.println(u);
+		System.out.println(u2);
+		System.out.println(u == u2);
+	}
+	
+	@Test
+	public void testBeanPostProcessor2() throws Exception {
+		ApplicationContext context = new ClasspathXmlApplicationContext("beans.xml");
+		Address a = context.getBean("address",Address.class);
+		System.out.println(a);
 	}
 
 }

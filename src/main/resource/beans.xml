@@ -16,4 +16,6 @@
 		<property name="username" value="pfw"/>
 		<property name="address" ref="address"/>
 	</bean>
+	
+	<bean class="com.skyline.earlySpring.MyBeanPostProcessor"/>
 </beans>

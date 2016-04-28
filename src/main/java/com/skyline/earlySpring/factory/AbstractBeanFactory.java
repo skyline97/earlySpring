@@ -50,6 +50,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	
 	/**
 	 * 通过遍历beanDefinitionNames来找到相同Class的bean
+	 * 该方法主要是用于BeanPostProcessor的注册
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -61,8 +62,8 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			}
 		}
 		
-		//如果未找到,则抛出异常
-		throw new RuntimeException("find no bean");
+		return null;
+		
 	}
 	
 	/**
@@ -177,6 +178,8 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 	
 	public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+		if(beanPostProcessor == null)
+			return;
 		this.beanPostProcessors.add(beanPostProcessor);
 	}
 	
