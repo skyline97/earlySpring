@@ -1,6 +1,6 @@
 package com.skyline.earlySpring;
 
-public class Address {
+public class Address implements AInterface{
 
 	private String name;
 	
@@ -25,6 +25,11 @@ public class Address {
 	@Override
 	public String toString() {
 		return "Address [name=" + name + ", phone=" + phone + "]";
+	}
+
+	@Override
+	public void log() {
+		System.out.println("log");
 	}
 	
 }

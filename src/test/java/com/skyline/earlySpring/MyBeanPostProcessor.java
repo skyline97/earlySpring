@@ -7,14 +7,14 @@ public class MyBeanPostProcessor implements BeanPostProcessor{
 	@Override
 	public Object postProcessAfterInitialization(Object object, String beanName)
 			throws Exception {
-		System.out.println("byebye");
+		System.out.println("postProcessAfterInitialization");
 		return object;
 	}
 	
 	@Override
 	public Object postProcessBeforeInitialization(Object object, String beanName)
 			throws Exception {
-		System.out.println("hello");
+		System.out.println("postProcessBeforeInitialization");
 		return object;
 	}
 }
