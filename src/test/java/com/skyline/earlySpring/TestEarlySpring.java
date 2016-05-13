@@ -23,7 +23,6 @@ import com.skyline.earlySpring.xml.XmlBeanDefinitionReader;
 
 public class TestEarlySpring {
 	
-
 	@Test
 	public void testIOC() throws Exception {
 		BeanFactory beanFactory = new AutowiredBeanFactory();
