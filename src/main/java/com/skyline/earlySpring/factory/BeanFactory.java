@@ -2,7 +2,11 @@ package com.skyline.earlySpring.factory;
 
 import com.skyline.earlySpring.core.BeanDefinitionRegister;
 
-
+/**
+ * BeanFactory继承了BeanDefinitionRegister,可以完成对BeanDefinition的注册
+ * @author skyline
+ *
+ */
 public interface BeanFactory extends BeanDefinitionRegister {
 
 	Object getBean(String name) throws Exception;

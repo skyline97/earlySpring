@@ -55,6 +55,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 	
 	
 	private void registerBeanDefinitions(Document doc) throws Exception {
+		//root元素就是<beans>
 		Element root = doc.getDocumentElement();
 		parseBeanDefinitions(root);
 	}
@@ -65,6 +66,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 	 * @throws Exception 
 	 */
 	private void parseBeanDefinitions(Element root) throws Exception {
+		//getChildNodes()方法回返回所有节点(包括空白节点),所以在处理子Element之前要先对Node的类型进行判断
 		NodeList nodeList = root.getChildNodes();
 		for(int i = 0; i < nodeList.getLength(); i++) {
 			Node node = nodeList.item(i);
@@ -110,7 +112,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 		
 		//lazyInit部分
 		String lazyInit = ele.getAttribute("lazyInit");
-		if(lazyInit != null && beanDefinition.isSingleton() &&lazyInit.equals("false")) {
+		if(lazyInit != null && beanDefinition.isSingleton() && lazyInit.equals("false")) {
 			beanDefinition.setLazyInit(false);
 			Object bean = ((BeanFactory)getRegistry()).getBean(name);
 			beanDefinition.setBean(bean);

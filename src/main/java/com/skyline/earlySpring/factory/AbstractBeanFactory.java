@@ -12,11 +12,14 @@ import com.skyline.earlySpring.core.BeanPostProcessor;
 public abstract class AbstractBeanFactory implements BeanFactory {
 
 	/**
-	 * 具体的IOC容器
+	 * 具体的IOC容器,放置BeanDefinition
 	 */
 	private Map<String, BeanDefinition> beanDefinitionMap = 
 			new ConcurrentHashMap<String, BeanDefinition>();
 	
+	/**
+	 * Definition名称列表
+	 */
 	private final List<String> beanDefinitionNames = new ArrayList<String>();
 	
 	/**
@@ -41,8 +44,8 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		if(bean == null) {
 			bean = doCreateBean(beanDefinition);
 			bean = initializeBean(bean,name);
-			//第二次setBean
-			if(beanDefinition.isSingleton()) 
+			//初始化后再次setBean
+			if(beanDefinition.isSingleton())
 				beanDefinition.setBean(bean);
 		}
 		return bean;
@@ -99,17 +102,19 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	protected Object doCreateBean(BeanDefinition beanDefinition) throws Exception{
 		if(beanDefinition.isSingleton()) {
 			Object bean = createBeanInstance(beanDefinition);
-			//第一次setBean
 			beanDefinition.setBean(bean);
 			//实现属性的依赖注入的地方
 			applyPropertyValues(bean,beanDefinition);
 			return bean;
 		}
 		
-		//prototype
-		Object bean = createBeanInstance(beanDefinition);
-		applyPropertyValues(bean, beanDefinition);
-		return bean;
+		//若是prototype类型,就除去setBean这一步骤,所以下一次创建Bean的时候
+		//就会重新调用CreateBean方法
+		else {
+			Object bean = createBeanInstance(beanDefinition);
+			applyPropertyValues(bean, beanDefinition);
+			return bean;
+		}
 		
 	}
 	

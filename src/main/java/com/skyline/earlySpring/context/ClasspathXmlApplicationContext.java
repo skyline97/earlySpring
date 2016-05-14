@@ -4,6 +4,11 @@ import com.skyline.earlySpring.io.ClassPathResource;
 import com.skyline.earlySpring.io.Resource;
 import com.skyline.earlySpring.xml.XmlBeanDefinitionReader;
 
+/**
+ * 文件地址位于ClassPath且资源文件形式为XML的上下文环境,
+ * @author skyline
+ *
+ */
 public class ClasspathXmlApplicationContext extends AbstractApplicationContext{
 	
 	private Resource resource;
