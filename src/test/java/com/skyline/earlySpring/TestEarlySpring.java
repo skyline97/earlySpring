@@ -15,8 +15,8 @@ import com.skyline.earlySpring.context.ApplicationContext;
 import com.skyline.earlySpring.context.ClasspathXmlApplicationContext;
 import com.skyline.earlySpring.core.BeanDefinitionReader;
 import com.skyline.earlySpring.core.BeanPostProcessor;
+import com.skyline.earlySpring.factory.AbstractBeanFactory;
 import com.skyline.earlySpring.factory.AutowiredBeanFactory;
-import com.skyline.earlySpring.factory.BeanFactory;
 import com.skyline.earlySpring.io.ClassPathResource;
 import com.skyline.earlySpring.io.Resource;
 import com.skyline.earlySpring.xml.XmlBeanDefinitionReader;
@@ -25,10 +25,11 @@ public class TestEarlySpring {
 
 	@Test
 	public void testIOC() throws Exception {
-		BeanFactory beanFactory = new AutowiredBeanFactory();
+		AbstractBeanFactory beanFactory = new AutowiredBeanFactory();
 		BeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
 		Resource resource = new ClassPathResource("beans.xml");
 		reader.loadBeanDefinitions(resource);
+		beanFactory.preInitiateSingletons();
 
 		User u = beanFactory.getBean("user", User.class);
 		Object u2 = beanFactory.getBean("user");
@@ -37,9 +38,10 @@ public class TestEarlySpring {
 
 	@Test
 	public void testIOC02() throws Exception {
-		BeanFactory beanFactory = new AutowiredBeanFactory();
+		AbstractBeanFactory beanFactory = new AutowiredBeanFactory();
 		BeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
 		reader.loadBeanDefinitions("classpath:beans.xml");
+		beanFactory.preInitiateSingletons();
 
 		User u = beanFactory.getBean(User.class);
 		User u2 = beanFactory.getBean("user2", User.class);
@@ -49,9 +51,10 @@ public class TestEarlySpring {
 
 	@Test
 	public void testRefAndScope() throws Exception {
-		BeanFactory beanFactory = new AutowiredBeanFactory();
+		AbstractBeanFactory beanFactory = new AutowiredBeanFactory();
 		BeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
 		reader.loadBeanDefinitions("classpath:beans.xml");
+		beanFactory.preInitiateSingletons();
 
 		// 有一个属性是ref类型
 		User u = beanFactory.getBean("user3", User.class);
@@ -86,6 +89,7 @@ public class TestEarlySpring {
 		
 		BeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
 		reader.loadBeanDefinitions("classpath:beans.xml");
+		beanFactory.preInitiateSingletons();
 
 		User u2 = beanFactory.getBean("user2", User.class);
 		System.out.println(u2);
@@ -94,10 +98,12 @@ public class TestEarlySpring {
 
 	@Test
 	public void testApplicationContext() throws Exception {
-		ApplicationContext context = new ClasspathXmlApplicationContext(
-				"beans.xml");
-		Address a = context.getBean("address", Address.class);
-		System.out.println(a);
+		ApplicationContext context = new ClasspathXmlApplicationContext("beans.xml");
+		User u = context.getBean("user",User.class);
+		User u2 = context.getBean("user2", User.class);
+		System.out.println(u);
+		System.out.println(u2);
+		System.out.println(u == u2);
 	}
 
 	@Test

@@ -31,6 +31,10 @@ public class User {
 	public void setUsername(String username) {
 		this.username = username;
 	}
+	
+	public User() {
+		System.out.println("lazy boy");
+	}
 
 	@Override
 	public String toString() {

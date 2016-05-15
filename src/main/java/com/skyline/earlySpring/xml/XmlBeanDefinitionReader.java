@@ -15,7 +15,6 @@ import com.skyline.earlySpring.core.BeanDefinition;
 import com.skyline.earlySpring.core.BeanDefinitionRegister;
 import com.skyline.earlySpring.core.BeanReference;
 import com.skyline.earlySpring.core.PropertyValue;
-import com.skyline.earlySpring.factory.BeanFactory;
 import com.skyline.earlySpring.io.Resource;
 
 /**
@@ -87,7 +86,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 		String name = ele.getAttribute("id");
 		String className = ele.getAttribute("class");
 		
-		//beanDefinition的singleton属性默认是true
+		//beanDefinition的scope属性默认是singleton
 		String scope = ele.getAttribute("scope");
 		BeanDefinition beanDefinition = new BeanDefinition();
 		if(scope != null && !scope.equals("")) {
@@ -112,11 +111,10 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 		
 		//lazyInit部分
 		String lazyInit = ele.getAttribute("lazyInit");
-		if(lazyInit != null && beanDefinition.isSingleton() && lazyInit.equals("false")) {
-			beanDefinition.setLazyInit(false);
-			Object bean = ((BeanFactory)getRegistry()).getBean(name);
-			beanDefinition.setBean(bean);
-		}
+		if(lazyInit != null && beanDefinition.isSingleton() && lazyInit.equals("true")) {
+			beanDefinition.setLazyInit(true);
+		} 
+		
 	}
 	
 	/**
@@ -143,6 +141,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader{
 					}
 					BeanReference beanReference = new BeanReference(ref);
 					beanDefinition.getPropertyValues().addPropertyValue(new PropertyValue(name, beanReference));
+					
 				}
 			}
 		}

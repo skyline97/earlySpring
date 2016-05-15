@@ -53,7 +53,6 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	
 	/**
 	 * 通过遍历beanDefinitionNames来找到相同Class的bean
-	 * 该方法主要是用于BeanPostProcessor的注册
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -119,7 +118,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 	
 	/**
-	 * 预实例化非LazyInit选项的单例Bean
+	 * 预实例化LazyInit选项的单例Bean
 	 * lazy-init 设置只对scop属性为singleton的bean起作用
 	 * @throws Exception
 	 */
