@@ -14,7 +14,7 @@ public class ClassPathResource implements Resource {
 	
 	@Override
 	public InputStream getInputStream() throws IOException {
-		InputStream in = getClass().getResourceAsStream("/" + classpath);
+		InputStream in = this.getClass().getResourceAsStream("/" + classpath);
 		if (in == null) {
 			throw new FileNotFoundException("it does not exist");
 		}
